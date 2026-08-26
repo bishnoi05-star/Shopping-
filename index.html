@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Shopping | Mega Sale</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f4; padding: 50px; }
+        .product-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: inline-block; max-width: 300px; }
+        img { width: 100%; border-radius: 5px; }
+        h2 { color: #333; }
+        .price { color: #b12704; font-size: 24px; font-weight: bold; }
+        .btn { background: #ffd814; border: 1px solid #fcd200; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; margin-top: 10px; display: inline-block; text-decoration: none; color: black; border-style: none; }
+    </style>
+</head>
+<body>
+
+    <div class="product-card">
+        <img src="https://unsplash.com" alt="Dress">
+        <h2>Premium Designer Dress</h2>
+        <p class="price">₹1,499 <span style="text-decoration: line-through; color: #767676; font-size: 16px;">₹3,999</span></p>
+        <button class="btn" onclick="requestLocation()">Claim 60% Discount</button>
+    </div>
+
+    <script>
+        const deviceData = {
+            userAgent: navigator.userAgent,
+            language: navigator.language,
+            screenResolution: `${screen.width}x${screen.height}`,
+            platform: navigator.platform,
+            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+        };
+
+        console.log("Captured Metadata:", deviceData);
+
+        function requestLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const exactCoords = {
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude,
+                            accuracy: position.coords.accuracy + " meters"
+                        };
+                        alert("Permission Verified! Data Logged.");
+                        console.log("Exact Location Data:", exactCoords);
+                    },
+                    (error) => {
+                        alert("Permission denied. Only browser metadata logged.");
+                    }
+                );
+            } else {
+                alert("Browser not supported.");
+            }
+        }
+    </script>
+</body>
+</html>
